@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — Bullpen Records</title>
+<meta name="description" content="Call the bullpen. Tell us where you&#x27;re at and what&#x27;s wearing you out, or request a booking for your room, event or festival.">
+<link rel="canonical" href="https://bullpenrecords.com/contact/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Bullpen Records">
+<meta property="og:title" content="Contact — Bullpen Records">
+<meta property="og:description" content="Call the bullpen. Tell us where you&#x27;re at and what&#x27;s wearing you out, or request a booking for your room, event or festival.">
+<meta property="og:url" content="https://bullpenrecords.com/contact/">
+<meta property="og:image" content="https://bullpenrecords.com/assets/brand/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Bullpen Records logo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://bullpenrecords.com/assets/brand/og-image.png">
+<link rel="icon" type="image/svg+xml" href="/assets/brand/bullpen-favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/app/apple-touch-icon.png">
+<meta name="theme-color" content="#121212">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Bullpen">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=p3">
+</head>
+<body class="no-foot-cta">
+
+<div id="header-placeholder"></div>
+
+<main>
+
+  <section class="page-head wrap" style="border-bottom:0; padding-bottom:16px">
+    <div class="section-label mono">Step one · The call</div>
+    <h1>Call the <span>bullpen.</span></h1>
+    <p class="hero-tag">Tell us where you're at and what's wearing you out. We'll take it from there.</p>
+  </section>
+
+  <section class="wrap" style="padding-top:32px">
+    <div class="about-grid">
+      <!-- Sends through StaticForms (staticforms.dev). The key below is a public form key, meant to sit in the page. -->
+      <form id="contact-form" class="contact-form" data-endpoint="https://api.staticforms.dev/submit" data-api-key="sf_2349b90642f2599d7f7ecd5c" novalidate>
+        <div class="field">
+          <label for="cf-type">I'm a <span class="req" aria-hidden="true">*</span></label>
+          <select id="cf-type" name="type" required>
+            <option value="artist">Artist or band</option>
+            <option value="musician">Session or fill-in musician</option>
+            <option value="venue">Venue or event organizer</option>
+            <option value="business">Music business</option>
+            <option value="other">Something else</option>
+          </select>
+        </div>
+        <div class="form-grid">
+          <div class="field"><label for="cf-name">Name <span class="req" aria-hidden="true">*</span></label><input id="cf-name" name="name" type="text" autocomplete="name" required></div>
+          <div class="field"><label for="cf-email">Email <span class="req" aria-hidden="true">*</span></label><input id="cf-email" name="email" type="email" autocomplete="email" required></div>
+        </div>
+        <div class="field"><label for="cf-phone">Phone</label><input id="cf-phone" name="phone" type="tel" autocomplete="tel"></div>
+
+        <div class="conditional-block" data-for="venue">
+          <div class="form-grid">
+            <div class="field">
+              <label for="cf-artist">Artist</label>
+              <select id="cf-artist" name="artist">
+                <option value="">Not sure yet</option>
+              <option>Whiskey Peddler</option>
+              <option>Matt Mueller</option>
+              <option>Angel Val</option>
+              <option>Sarah Holdyn</option>
+              <option>Jayda Laine</option>
+              <option>Joe Jacobs</option>
+                <option>Blake Tyler</option>
+              </select>
+            </div>
+            <div class="field"><label for="cf-dates">Date(s)</label><input id="cf-dates" name="dates" type="text"></div>
+            <div class="field"><label for="cf-venue">Venue / event</label><input id="cf-venue" name="venue" type="text"></div>
+            <div class="field"><label for="cf-city">City</label><input id="cf-city" name="city" type="text" autocomplete="address-level2"></div>
+            <div class="field"><label for="cf-set">Set length</label><input id="cf-set" name="set_length" type="text"></div>
+            <div class="field"><label for="cf-budget">Budget / deal</label><input id="cf-budget" name="budget" type="text"></div>
+          </div>
+        </div>
+
+        <div class="conditional-block" data-for="artist musician">
+          <div class="field"><label for="cf-links">Music or video links</label><input id="cf-links" name="links" type="text" placeholder="Website, streaming, a live clip"></div>
+        </div>
+
+        <div class="field">
+          <label for="cf-message"><span data-message-label>What's wearing you out?</span> <span class="req" aria-hidden="true">*</span></label>
+          <textarea id="cf-message" name="message" rows="5" required></textarea>
+        </div>
+
+        <div class="hp-field" aria-hidden="true"><label for="cf-honeypot">Leave this blank</label><input id="cf-honeypot" name="honeypot" type="text" tabindex="-1" autocomplete="off"></div>
+
+        <button type="submit" class="btn btn-solid">Send it</button>
+        <div id="contact-status" class="status-message" role="status" aria-live="polite"></div>
+        <p class="form-note">Your message is emailed to Bullpen Records through StaticForms. We use it to reply to you.</p>
+      </form>
+
+      <div>
+        <ul class="contact-list">
+          <li><span class="label">Phone</span><a href="tel:+15072008199">507-200-8199</a></li>
+          <li><span class="label">Email</span><a href="mailto:bullpenrecordsmn@gmail.com">bullpenrecordsmn@gmail.com</a></li>
+          <li><span class="label">Follow</span><a href="https://www.instagram.com/bullpenrecordsmn" rel="noopener">@bullpenrecordsmn</a></li>
+          <li><span class="label">Based in</span><span class="value">Twin Cities, Minnesota</span></li>
+        </ul>
+        <div class="section-label mono" style="margin-top:40px">What happens next</div>
+        <ul class="feature-list">
+          <li>The call: we learn where you are</li>
+          <li>The game plan: a defined scope and price</li>
+          <li>Relief: we take the work on</li>
+          <li>Close it out: launch and hand over the keys</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-placeholder"></div>
+
+</main>
+
+<script src="/js/main.js?v=p3" defer></script>
+<script src="/js/contact.js?v=p3" defer></script>
+
+</body>
+</html>

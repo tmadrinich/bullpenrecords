@@ -1,0 +1,19 @@
+# Reference copy of the previous site
+legacy-tcsc/
+
+# Working notes and source documents: kept on this machine only
+CLAUDE.md
+KICKOFF.md
+CHANGELOG.md
+docs/
+cutover/
+backups/
+brand/*.pdf
+*.avif
+.claude/
+
+.DS_Store
+node_modules/
+.env
+.env.*
+!.env.example

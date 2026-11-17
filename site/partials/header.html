@@ -1,0 +1,45 @@
+<header>
+  <div class="wrap nav">
+    <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="Toggle menu">
+    <div class="brand">
+      <a href="/" class="brand-link">
+        <img src="/assets/brand/bullpen-records-cream.svg" alt="Bullpen Records" class="brand-logo" width="160" height="80">
+      </a>
+    </div>
+    <label for="nav-toggle" class="nav-toggle-label" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </label>
+    <nav aria-label="Main">
+      <ul>
+        <li><a href="/roster/">Roster</a></li>
+        <li><a href="/services/">Services</a></li>
+        <li><a href="/bullpen/">The Bullpen</a></li>
+        <li><a href="/venues/">Venues</a></li>
+        <li><a href="/about/">About</a></li>
+        <li class="nav-mobile-only" data-auth-only><a href="/bookings/">Bookings</a></li>
+        <li class="nav-mobile-only" data-auth-only data-admin-only><a href="/production-tracker/">Production Tracker</a></li>
+        <li class="nav-mobile-only" data-auth-only data-admin-only><a href="/settlement/">Settlement</a></li>
+        <li class="nav-mobile-only" data-auth-only data-admin-only><a href="/team/">Team</a></li>
+        <li class="nav-mobile-only"><a href="/contact/">Call the bullpen</a></li>
+        <li class="nav-mobile-only" data-guest-only><a href="/login/">Log in</a></li>
+        <li class="nav-mobile-only" data-auth-only><a href="/login/?signout=1">Sign out</a></li>
+      </ul>
+    </nav>
+    <div class="nav-actions">
+      <a href="/login/" class="nav-login" data-guest-only>Log in</a>
+      <div class="member-menu" data-auth-only>
+        <button type="button" class="member-menu-btn" aria-label="Member menu" aria-expanded="false" aria-controls="member-menu-panel">
+          <span></span><span></span><span></span>
+        </button>
+        <ul class="member-menu-panel" id="member-menu-panel" hidden>
+          <li><a href="/bookings/">Bookings</a></li>
+          <li data-admin-only><a href="/production-tracker/">Production Tracker</a></li>
+          <li data-admin-only><a href="/settlement/">Settlement</a></li>
+          <li data-admin-only><a href="/team/">Team</a></li>
+          <li class="member-menu-signout"><a href="/login/?signout=1">Sign out</a></li>
+        </ul>
+      </div>
+      <a href="/contact/" class="btn btn-solid nav-cta">Call the bullpen</a>
+    </div>
+  </div>
+</header>

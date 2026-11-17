@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en" data-require-auth>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Bookings — Bullpen Records</title>
+<link rel="icon" type="image/svg+xml" href="/assets/brand/bullpen-favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/app/apple-touch-icon.png">
+<meta name="theme-color" content="#121212">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Bullpen">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=p3">
+<style>
+  /* Bookings-only styles. Colors, type and buttons come from /css/style.css (Bullpen Records brand guide). */
+  :root{ --alert: var(--rally-red); --ok: var(--chalk); --warn: var(--chalk); }
+  [hidden]{ display: none !important; }
+  .bk-main{ padding: 56px 0 88px; border-bottom: 1px solid var(--baseline); }
+  .bk-wrap{ max-width: 936px; }
+
+  .bk-label, .bk-tag, .bk-pill, .bk-stat .l, .bk-facts .k, .bk-group h2 .n, .bk-linkbtn, .bk-cmeta, .bk-msg, .bk-field label, .bk-chip{
+    font-family: var(--font-body); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; font-variant-numeric: tabular-nums;
+  }
+  .bk-label{ font-size: 0.72rem; color: var(--rally-red); }
+  .bk-title{ font-size: clamp(2.4rem, 8vw, 3.6rem); line-height: 1; color: var(--chalk); margin-top: 8px; }
+  .bk-title span{ color: var(--stitch-red); }
+  .bk-sub{ color: var(--infield-dust); margin: 10px 0 0; max-width: 62ch; }
+  .bk-top{ display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 28px; }
+  .bk-artist select{ background: var(--bench); border: 1px solid var(--infield-dust); color: var(--chalk); font-family: var(--font-body); font-size: 0.95rem; padding: 8px 12px; border-radius: 0; }
+
+  .bk-stats{ display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--baseline); border: 1px solid var(--baseline); margin-bottom: 32px; }
+  .bk-stat{ background: var(--bench); padding: 16px 18px; min-width: 0; }
+  .bk-stat .n{ font-family: var(--font-display); font-size: 2rem; line-height: 1.1; color: var(--chalk); font-variant-numeric: tabular-nums; }
+  .bk-stat .n small{ display: block; font-family: var(--font-body); font-size: 0.8rem; color: var(--infield-dust); line-height: 1.3; text-transform: none; letter-spacing: 0; }
+  .bk-stat .l{ font-size: 0.64rem; color: var(--infield-dust); }
+  .bk-stat.attn .n{ color: var(--rally-red); }
+
+  /* Staff-only submission spend strip */
+  .bk-spend{ border: 1px solid var(--baseline); border-top: 2px solid var(--stitch-red); background: var(--bench); padding: 14px 18px 16px; margin: -16px 0 32px; }
+  .bk-spend-head{ display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+  .bk-spend-head .bk-label{ font-size: 0.64rem; }
+  .bk-spend-head .bk-msg{ font-size: 0.6rem; }
+  .bk-spend-row{ display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  .bk-spend-row .n{ font-family: var(--font-display); font-size: 1.75rem; line-height: 1.1; color: var(--chalk); font-variant-numeric: tabular-nums; }
+  .bk-spend-row .n.brass{ color: var(--rally-red); }
+  .bk-spend-row .l{ font-family: var(--font-body); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.6rem; color: var(--infield-dust); }
+  .bk-spend-row small{ display: block; font-size: 0.78rem; color: var(--infield-dust); }
+
+  /* Status filter */
+  .bk-filter{ display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 28px; }
+  .bk-chip{ font-size: 0.64rem; padding: 7px 14px; border-radius: 999px; border: 1px solid var(--infield-dust); background: transparent; color: var(--infield-dust); cursor: pointer; white-space: nowrap; }
+  .bk-chip .c{ margin-left: 6px; opacity: 0.7; }
+  .bk-chip:hover:not(:disabled){ color: var(--chalk); border-color: var(--rally-red); }
+  .bk-chip:focus-visible{ outline: 2px solid var(--rally-red); outline-offset: 2px; }
+  .bk-chip[aria-pressed="true"]{ background: var(--stitch-red); border-color: var(--stitch-red); color: var(--chalk); }
+  .bk-chip[aria-pressed="true"] .c{ opacity: 1; }
+  .bk-chip:disabled{ opacity: 0.35; cursor: default; }
+
+  .bk-group{ margin-bottom: 36px; }
+  .bk-group h2{ font-size: 1.75rem; color: var(--chalk); margin-bottom: 4px; display: flex; align-items: baseline; gap: 10px; }
+  .bk-group h2 .n{ font-size: 0.72rem; color: var(--infield-dust); }
+  .bk-group .lede{ color: var(--infield-dust); font-size: 0.92rem; margin: 0 0 12px; }
+
+  .bk-card{ border: 1px solid var(--baseline); background: var(--bench); padding: 20px 22px 18px; margin-bottom: 10px; position: relative; }
+  .bk-card::before{ content: ""; position: absolute; left: -1px; top: -1px; bottom: -1px; width: 3px; background: var(--stripe, transparent); }
+  .bk-card.waiting{ --stripe: var(--rally-red); }
+  .bk-card.urgent{ --stripe: var(--stitch-red); }
+  .bk-card.accepted{ --stripe: var(--ok); }
+  .bk-card.dim{ opacity: 0.6; }
+  .bk-head{ display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .bk-name{ font-family: var(--font-display); letter-spacing: 0.015em; font-size: 1.75rem; line-height: 1.1; color: var(--chalk); text-transform: uppercase; text-decoration: none; }
+  a.bk-name:hover{ color: var(--rally-red); }
+  .bk-tag{ font-size: 0.62rem; color: var(--rally-red); border: 1px solid var(--baseline); padding: 2px 8px; margin-left: 10px; vertical-align: 4px; white-space: nowrap; }
+  .bk-meta{ color: var(--infield-dust); font-size: 0.92rem; margin: 4px 0 14px; }
+  .bk-pill{ font-size: 0.64rem; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--baseline); color: var(--infield-dust); white-space: nowrap; }
+  .bk-pill.waiting{ border-color: var(--rally-red); color: var(--rally-red); }
+  .bk-pill.todo{ border-color: var(--stitch-red); color: var(--chalk); background: var(--stitch-red); }
+  .bk-pill.accepted{ border-color: var(--chalk); background: var(--chalk); color: var(--dugout-black); }
+  .bk-pill.submitted{ border-color: var(--chalk); color: var(--chalk); }
+
+  .bk-facts{ display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 20px; }
+  .bk-facts > div{ min-width: 0; }
+  .bk-facts .k{ display: block; font-size: 0.62rem; color: var(--infield-dust); margin-bottom: 2px; }
+  .bk-facts .v{ font-size: 0.94rem; color: var(--chalk); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .bk-facts .v small{ display: block; color: var(--infield-dust); font-size: 0.82rem; }
+  .bk-days{ font-family: var(--font-body); font-weight: 600; font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; margin-left: 6px; color: var(--infield-dust); }
+  .bk-days.hot{ color: var(--alert); } .bk-days.warn{ color: var(--warn); }
+  .bk-note{ margin: 14px 0 0; color: var(--chalk); font-size: 0.96rem; max-width: 70ch; }
+  .bk-internal{ margin: 10px 0 0; padding: 10px 12px; border: 1px dashed var(--baseline); color: var(--infield-dust); font-size: 0.88rem; }
+  .bk-internal b{ font-family: var(--font-body); font-weight: 600; font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rally-red); margin-right: 6px; }
+
+  .bk-actions{ display: flex; flex-wrap: wrap; gap: 18px; margin-top: 14px; border-top: 1px solid var(--baseline); padding-top: 12px; }
+  .bk-linkbtn{ background: none; border: 0; padding: 0; cursor: pointer; font-size: 0.68rem; color: var(--infield-dust); }
+  .bk-linkbtn:hover, .bk-linkbtn[aria-expanded="true"]{ color: var(--rally-red); }
+  .bk-linkbtn.danger:hover{ color: var(--alert); }
+
+  .bk-comments{ margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .bk-comment{ border-left: 2px solid var(--baseline); padding: 2px 0 2px 12px; }
+  .bk-comment.mine{ border-left-color: var(--stitch-red); }
+  .bk-cmeta{ font-size: 0.6rem; color: var(--infield-dust); }
+  .bk-cmeta b{ color: var(--rally-red); font-weight: 600; margin-right: 8px; }
+  .bk-cbody{ white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.94rem; margin-top: 2px; }
+  .bk-cform{ display: flex; gap: 10px; align-items: flex-end; }
+  .bk-cform textarea{ flex: 1; min-width: 0; min-height: 44px; }
+
+  .bk-edit{ margin-top: 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; }
+  .bk-edit .span{ grid-column: 1 / -1; }
+  .bk-field{ display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .bk-field label{ font-size: 0.62rem; color: var(--infield-dust); }
+  .bk-field input, .bk-field select, .bk-field textarea, .bk-cform textarea{
+    background: var(--dugout-black); border: 1px solid var(--infield-dust); color: var(--chalk); font-family: var(--font-body);
+    font-size: 16px; padding: 9px 12px; border-radius: 0; width: 100%; min-width: 0; color-scheme: dark;
+  }
+  .bk-field textarea{ min-height: 64px; resize: vertical; }
+  .bk-field input:focus, .bk-field select:focus, .bk-field textarea:focus, .bk-cform textarea:focus{ border-color: var(--rally-red); outline: none; }
+  .bk-editbar{ display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+
+  .bk-add{ border: 1px solid var(--baseline); background: var(--bench); padding: 18px 22px; margin-bottom: 32px; }
+  .bk-add summary{ cursor: pointer; font-family: var(--font-body); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.78rem; color: var(--rally-red); }
+
+  .bk-msg{ font-size: 0.68rem; color: var(--infield-dust); }
+  .bk-msg.error{ color: var(--alert); } .bk-msg.ok{ color: var(--chalk); }
+  .bk-empty{ color: var(--infield-dust); padding: 24px 0; }
+
+  @media (max-width: 720px){
+    .bk-stats{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .bk-spend-row{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .bk-facts{ grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .bk-edit{ grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 480px){
+    .bk-main{ padding: 40px 0 64px; }
+    .bk-card{ padding: 16px 16px 14px; }
+    .bk-facts{ grid-template-columns: minmax(0, 1fr); }
+    .bk-filter{ flex-wrap: nowrap; overflow-x: auto; margin-left: -20px; margin-right: -20px; padding: 0 20px 4px; scrollbar-width: none; }
+    .bk-filter::-webkit-scrollbar{ display: none; }
+    .bk-cform{ flex-direction: column; align-items: stretch; }
+  }
+</style>
+</head>
+<body>
+
+<div id="header-placeholder"></div>
+
+<main>
+  <div class="bk-main">
+    <div class="wrap bk-wrap" id="app">
+      <div class="bk-msg">Loading…</div>
+    </div>
+  </div>
+  <div id="footer-placeholder"></div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="/js/auth.js?v=p3"></script>
+<script src="/js/main.js?v=p3" defer></script>
+<script>
+(function () {
+  'use strict';
+
+  // Status order drives the page: what needs the artist first, then what's moving.
+  var STATUSES = ['Waiting on you', 'To do', 'Submitted', 'Research', 'Accepted', 'Declined', 'Closed', 'Skip'];
+  var GROUPS = [
+    { key: 'waiting', title: 'Waiting on you', lede: 'Need a decision or OK before we move.', match: ['Waiting on you'] },
+    { key: 'next', title: 'Up next', lede: 'Applying or pitching soon.', match: ['To do'] },
+    { key: 'sent', title: 'Submitted', lede: 'Sent. Waiting to hear back.', match: ['Submitted'] },
+    { key: 'confirmed', title: 'Confirmed', lede: '', match: ['Accepted'] },
+    { key: 'research', title: 'Researching', lede: 'Confirming dates, contacts and how to apply.', match: ['Research'] },
+    { key: 'closed', title: 'Closed', lede: '', match: ['Declined', 'Closed'] },
+    { key: 'skip', title: 'Skipped', lede: 'Staff only. Hidden from the artist.', match: ['Skip'], adminOnly: true }
+  ];
+  var TYPES = ['Festival', 'Fair showcase', 'Buyer pitch', 'Industry showcase', 'Private event', 'Club / venue'];
+  var BILLING = ['Full band', 'Acoustic duo', 'Either'];
+
+  var app = document.getElementById('app');
+  var sb = null, me = null, isAdmin = false;
+  var bookings = [], notes = {}, paid = {}, comments = {}, artists = [], artist = null;
+  var open = { comments: {}, edit: {} };
+  var filter = 'all';
+  try { filter = localStorage.getItem('bullpen-bookings-filter') || 'all'; } catch (e) {}
+
+  // ---- Helpers ----
+  function el(tag, props, kids) {
+    var n = document.createElement(tag);
+    if (props) Object.keys(props).forEach(function (k) {
+      var v = props[k];
+      if (v === null || v === undefined || v === false) return;
+      if (k === 'text') n.textContent = v;
+      else if (k === 'class') n.className = v;
+      else if (k.indexOf('on') === 0) n.addEventListener(k.slice(2), v);
+      else n.setAttribute(k, v);
+    });
+    (kids || []).forEach(function (c) { if (c) n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
+    return n;
+  }
+  function clear(n) { while (n.firstChild) n.removeChild(n.firstChild); }
+  function today() { var d = new Date(); d.setHours(0, 0, 0, 0); return d; }
+  function parseDate(s) { if (!s || !/^\d{4}-\d{2}-\d{2}/.test(s)) return null; var p = s.slice(0, 10).split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function fmtDate(s) { var d = parseDate(s); return d ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+  function daysLeft(s) { var d = parseDate(s); return d ? Math.round((d - today()) / 86400000) : null; }
+  function fmtStamp(s) { var d = new Date(s); return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' · ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }); }
+  function isOpen(b) { return b.status === 'Waiting on you' || b.status === 'To do' || b.status === 'Research'; }
+  function safeLink(u) { return /^https?:\/\//i.test(u || '') ? u : null; }
+  function msg(text, kind) { return el('div', { class: 'bk-msg' + (kind ? ' ' + kind : ''), role: 'status', text: text }); }
+  function sortByDeadline(a, b) {
+    var da = parseDate(a.deadline), db = parseDate(b.deadline);
+    if (da && db) return da - db; if (da) return -1; if (db) return 1;
+    return String(a.event).localeCompare(String(b.event));
+  }
+  function slug(s) { return String(s || '').toLowerCase().replace(/[^a-z]+/g, '-').replace(/^-|-$/g, ''); }
+
+  // ---- Boot ----
+  function boot() {
+    var auth = window.bullpenAuth;
+    if (!auth || !auth.sb) { clear(app); app.appendChild(msg('Could not connect. Refresh to try again.', 'error')); return; }
+    sb = auth.sb;
+    auth.profile.then(function (p) {
+      if (!p) return;
+      me = p;
+      isAdmin = p.role === 'admin';
+      if (!isAdmin && p.role !== 'artist') {
+        clear(app);
+        app.appendChild(el('h1', { class: 'bk-title', text: 'Bookings' }));
+        app.appendChild(el('p', { class: 'bk-sub', text: 'Your login isn’t linked to an artist yet. Contact Bullpen Records at bullpenrecordsmn@gmail.com.' }));
+        return;
+      }
+      load();
+    });
+  }
+
+  async function load() {
+    var q = sb.from('bookings').select('*');
+    var r = await q;
+    if (r.error) { clear(app); app.appendChild(msg(r.error.message, 'error')); return; }
+    bookings = r.data || [];
+    artists = bookings.map(function (b) { return b.artist; }).filter(function (a, i, arr) { return arr.indexOf(a) === i; }).sort();
+    if (isAdmin) {
+      var saved = null; try { saved = localStorage.getItem('bullpen-bookings-artist'); } catch (e) {}
+      artist = artists.indexOf(saved) !== -1 ? saved : (artists[0] || null);
+      var n = await sb.from('booking_notes').select('booking_id, note, paid');
+      notes = {}; paid = {};
+      (n.data || []).forEach(function (x) {
+        if (x.note) notes[x.booking_id] = x.note;
+        if (x.paid !== null && x.paid !== undefined) paid[x.booking_id] = Number(x.paid);
+      });
+    } else {
+      artist = me.artistName;
+    }
+    var c = await sb.from('booking_comments').select('id, booking_id, author_id, author_label, body, created_at').order('created_at', { ascending: true });
+    comments = {}; (c.data || []).forEach(function (x) { (comments[x.booking_id] = comments[x.booking_id] || []).push(x); });
+    render();
+  }
+
+  // ---- Page ----
+  function visible() {
+    return bookings.filter(function (b) { return b.artist === artist && (isAdmin || b.status !== 'Skip'); });
+  }
+
+  function render() {
+    clear(app);
+    var rows = visible();
+
+    var top = el('div', { class: 'bk-top' });
+    top.appendChild(el('div', {}, [
+      el('div', { class: 'bk-label', text: isAdmin ? 'Bookings · Staff view' : 'Bookings · Bullpen Records' }),
+      el('h1', { class: 'bk-title' }, [artist ? artist + ' ' : 'Bookings ', el('span', { text: '2027' })]),
+      el('p', { class: 'bk-sub', text: isAdmin
+        ? 'Everything here except the dashed internal notes is visible to the artist. Status “Waiting on you” puts a booking at the top of their page.'
+        : 'Festivals, fair showcases and buyer pitches we’re working for you. Leave a comment on any booking and we’ll see it.' })
+    ]));
+    if (isAdmin && artists.length > 1) {
+      var sel = el('select', { id: 'bk-artist', 'aria-label': 'Artist' });
+      artists.forEach(function (a) { var o = el('option', { value: a, text: a }); if (a === artist) o.selected = true; sel.appendChild(o); });
+      sel.addEventListener('change', function () { artist = sel.value; try { localStorage.setItem('bullpen-bookings-artist', artist); } catch (e) {} render(); });
+      top.appendChild(el('label', { class: 'bk-artist' }, [sel]));
+    }
+    app.appendChild(top);
+
+    app.appendChild(stats(rows));
+    if (isAdmin) app.appendChild(spend(rows));
+    if (isAdmin) app.appendChild(addForm());
+
+    if (!rows.length) {
+      app.appendChild(el('div', { class: 'bk-empty', text: isAdmin ? 'No bookings for this artist yet. Add the first one above.' : 'Nothing here yet. We’ll add opportunities as we line them up.' }));
+      return;
+    }
+    var bar = el('div', { class: 'bk-filter', role: 'group', 'aria-label': 'Filter by status' });
+    var list = el('div', { id: 'bk-list' });
+    app.appendChild(bar);
+    app.appendChild(list);
+    drawList(rows, bar, list);
+  }
+
+  // ---- Status filter ----
+  function groupRows(rows, g) {
+    return rows.filter(function (b) { return g.match.indexOf(b.status) !== -1; }).sort(sortByDeadline);
+  }
+  function setFilter(key) {
+    filter = key;
+    try { localStorage.setItem('bullpen-bookings-filter', key); } catch (e) {}
+  }
+
+  function drawList(rows, bar, list) {
+    var groups = GROUPS.filter(function (g) { return !g.adminOnly || isAdmin; });
+    var counts = {};
+    groups.forEach(function (g) { counts[g.key] = groupRows(rows, g).length; });
+    // A saved filter with nothing in it for this artist falls back to All.
+    if (filter !== 'all' && !counts[filter]) filter = 'all';
+
+    clear(bar);
+    function chip(key, label, n) {
+      var b = el('button', { class: 'bk-chip', type: 'button', 'aria-pressed': String(filter === key), disabled: n === 0 ? 'disabled' : null }, [label, el('span', { class: 'c', text: String(n) })]);
+      b.addEventListener('click', function () {
+        if (filter === key) return;
+        setFilter(key);
+        drawList(visible(), bar, list);
+      });
+      return b;
+    }
+    bar.appendChild(chip('all', 'All', rows.length));
+    groups.forEach(function (g) { bar.appendChild(chip(g.key, g.title, counts[g.key])); });
+
+    clear(list);
+    groups.forEach(function (g) {
+      if (filter !== 'all' && g.key !== filter) return;
+      var items = groupRows(rows, g);
+      if (!items.length) return;
+      var sec = el('section', { class: 'bk-group', 'aria-label': g.title, style: 'padding:0;border:0' }, [
+        el('h2', {}, [g.title, el('span', { class: 'n', text: String(items.length) })]),
+        g.lede ? el('p', { class: 'lede', text: g.lede }) : null
+      ]);
+      items.forEach(function (b) { sec.appendChild(card(b)); });
+      list.appendChild(sec);
+    });
+  }
+
+  function stats(rows) {
+    var waiting = rows.filter(function (b) { return b.status === 'Waiting on you'; }).length;
+    var sent = rows.filter(function (b) { return b.status === 'Submitted'; }).length;
+    var confirmed = rows.filter(function (b) { return b.status === 'Accepted'; }).length;
+    var next = rows.filter(function (b) { return isOpen(b) && daysLeft(b.deadline) !== null && daysLeft(b.deadline) >= 0; }).sort(sortByDeadline)[0];
+    var nextN = el('div', { class: 'n' });
+    if (next) { var d = daysLeft(next.deadline); nextN.appendChild(document.createTextNode(d === 0 ? 'Today' : d + (d === 1 ? ' day' : ' days'))); nextN.appendChild(el('small', { text: next.event })); }
+    else nextN.textContent = '—';
+    return el('div', { class: 'bk-stats' }, [
+      el('div', { class: 'bk-stat' + (waiting ? ' attn' : '') }, [el('div', { class: 'n', text: String(waiting) }), el('div', { class: 'l', text: 'Waiting on you' })]),
+      el('div', { class: 'bk-stat' }, [el('div', { class: 'n', text: String(sent) }), el('div', { class: 'l', text: 'Submitted' })]),
+      el('div', { class: 'bk-stat' }, [el('div', { class: 'n', text: String(confirmed) }), el('div', { class: 'l', text: 'Confirmed' })]),
+      el('div', { class: 'bk-stat' }, [nextN, el('div', { class: 'l', text: 'Next deadline' })])
+    ]);
+  }
+
+  // ---- Staff-only: submission spend ----
+  function money(n) { return '$' + (Math.round(n * 100) / 100).toLocaleString('en-US', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }); }
+  // First dollar figure in the fee text, e.g. "$25 non-resident fee" -> 25. Free/blank/TBD -> 0.
+  function feeEstimate(fee) { var m = /\$\s?(\d+(?:\.\d{1,2})?)/.exec(fee || ''); return m ? Number(m[1]) : 0; }
+  function sum(list, fn) { return list.reduce(function (t, b) { return t + fn(b); }, 0); }
+
+  function spend(rows) {
+    var paidOf = function (b) { return paid[b.id] || 0; };
+    var allPaid = bookings.filter(function (b) { return paid[b.id] > 0; });
+    var artistPaid = rows.filter(function (b) { return paid[b.id] > 0; });
+    function ahead(list) { return list.filter(function (b) { return (b.status === 'To do' || b.status === 'Waiting on you') && !(paid[b.id] > 0) && feeEstimate(b.fee) > 0; }); }
+    var dueArtist = ahead(rows), dueAll = ahead(bookings);
+    var est = function (b) { return feeEstimate(b.fee); };
+    function cell(n, label, sub, brass) {
+      return el('div', {}, [el('div', { class: 'n' + (brass ? ' brass' : ''), text: n }), el('div', { class: 'l', text: label }), sub ? el('small', { text: sub }) : null]);
+    }
+    function aheadSub(list) { return list.length ? list.length + ' up-next fee' + (list.length === 1 ? '' : 's') + ' · est.' : 'Nothing due'; }
+    return el('section', { class: 'bk-spend', 'aria-label': 'Submission spend', style: 'padding:14px 18px 16px' }, [
+      el('div', { class: 'bk-spend-head' }, [
+        el('div', { class: 'bk-label', text: 'Submission spend · Staff only' }),
+        el('div', { class: 'bk-msg', text: 'Set “Paid” in Edit when you pay a fee' })
+      ]),
+      el('div', { class: 'bk-spend-row' }, [
+        cell(money(sum(allPaid, paidOf)), 'Spent · all artists', allPaid.length + (allPaid.length === 1 ? ' paid submission' : ' paid submissions'), true),
+        cell(money(sum(artistPaid, paidOf)), 'Spent · ' + (artist || 'artist'), artistPaid.length + ' paid'),
+        cell(money(sum(dueArtist, est)), 'Ahead · ' + (artist || 'artist'), aheadSub(dueArtist)),
+        cell(money(sum(dueAll, est)), 'Ahead · all artists', aheadSub(dueAll))
+      ])
+    ]);
+  }
+
+  function card(b) {
+    var d = daysLeft(b.deadline);
+    var urgent = isOpen(b) && d !== null && d >= 0 && d <= 7;
+    var cls = 'bk-card' + (b.status === 'Waiting on you' ? ' waiting' : '') + (urgent ? ' urgent' : '') + (b.status === 'Accepted' ? ' accepted' : '') + (['Declined', 'Closed', 'Skip'].indexOf(b.status) !== -1 ? ' dim' : '');
+    var c = el('article', { class: cls, id: 'b-' + b.id });
+
+    var link = safeLink(b.link);
+    var name = link ? el('a', { class: 'bk-name', href: link, target: '_blank', rel: 'noopener', text: b.event }) : el('span', { class: 'bk-name', text: b.event });
+    var pillCls = { 'Waiting on you': 'waiting', 'To do': 'todo', 'Accepted': 'accepted', 'Submitted': 'submitted' }[b.status] || '';
+    var pillText = isAdmin ? b.status : ({ 'To do': 'Up next', 'Research': 'Researching', 'Accepted': 'Confirmed' }[b.status] || b.status);
+    c.appendChild(el('div', { class: 'bk-head' }, [
+      el('div', {}, [name, b.type ? el('span', { class: 'bk-tag', text: b.type }) : null]),
+      el('span', { class: 'bk-pill ' + pillCls, text: pillText })
+    ]));
+    c.appendChild(el('div', { class: 'bk-meta', text: [b.location, b.event_dates].filter(Boolean).join(' · ') }));
+
+    var dl = el('div', { class: 'v' });
+    if (b.deadline) {
+      dl.appendChild(document.createTextNode(fmtDate(b.deadline)));
+      if (isOpen(b) && d !== null) {
+        var t = d < 0 ? 'passed' : d === 0 ? 'today' : d + 'd left';
+        dl.appendChild(el('span', { class: 'bk-days' + (d >= 0 && d <= 7 ? ' hot' : d > 7 && d <= 30 ? ' warn' : ''), text: t }));
+      }
+      if (b.deadline_note) dl.appendChild(el('small', { text: b.deadline_note }));
+    } else dl.textContent = b.deadline_note || '—';
+    if (b.submitted) dl.appendChild(el('small', { text: 'Sent ' + fmtDate(b.submitted) }));
+    c.appendChild(el('div', { class: 'bk-facts' }, [
+      el('div', {}, [el('span', { class: 'k', text: 'Deadline' }), dl]),
+      el('div', {}, [el('span', { class: 'k', text: 'How · Fee' }), el('div', { class: 'v', text: [b.method, b.fee].filter(Boolean).join(' · ') || '—' })]),
+      el('div', {}, [el('span', { class: 'k', text: 'Billing' }), el('div', { class: 'v', text: b.billing || '—' })])
+    ]));
+    if (b.artist_note) c.appendChild(el('p', { class: 'bk-note', text: b.artist_note }));
+    if (isAdmin && (notes[b.id] || paid[b.id] > 0)) {
+      c.appendChild(el('div', { class: 'bk-internal' }, [
+        el('b', { text: 'Internal' }),
+        paid[b.id] > 0 ? 'Paid ' + money(paid[b.id]) + (notes[b.id] ? ' · ' : '') : null,
+        notes[b.id] || null
+      ]));
+    }
+
+    // Actions
+    var list = comments[b.id] || [];
+    var cBtn = el('button', { class: 'bk-linkbtn', type: 'button', 'aria-expanded': String(!!open.comments[b.id]), text: list.length ? 'Comments (' + list.length + ')' : 'Comment' });
+    cBtn.addEventListener('click', function () { open.comments[b.id] = !open.comments[b.id]; rerenderCard(b); });
+    var actions = el('div', { class: 'bk-actions' }, [cBtn]);
+    if (isAdmin) {
+      var eBtn = el('button', { class: 'bk-linkbtn', type: 'button', 'aria-expanded': String(!!open.edit[b.id]), text: 'Edit' });
+      eBtn.addEventListener('click', function () { open.edit[b.id] = !open.edit[b.id]; rerenderCard(b); });
+      actions.appendChild(eBtn);
+    }
+    c.appendChild(actions);
+
+    if (open.comments[b.id]) c.appendChild(commentBox(b));
+    if (isAdmin && open.edit[b.id]) c.appendChild(editBox(b));
+    return c;
+  }
+
+  function rerenderCard(b) {
+    var old = document.getElementById('b-' + b.id);
+    if (old) old.replaceWith(card(b)); else render();
+  }
+
+  // ---- Comments ----
+  function commentBox(b) {
+    var box = el('div', { class: 'bk-comments' });
+    (comments[b.id] || []).forEach(function (cm) {
+      var mine = cm.author_id === me.userId;
+      var row = el('div', { class: 'bk-comment' + (mine ? ' mine' : '') }, [
+        el('div', { class: 'bk-cmeta' }, [el('b', { text: cm.author_label }), fmtStamp(cm.created_at)]),
+        el('div', { class: 'bk-cbody', text: cm.body })
+      ]);
+      if (mine || isAdmin) {
+        var del = el('button', { class: 'bk-linkbtn danger', type: 'button', text: 'Delete', style: 'margin-top:4px' });
+        del.addEventListener('click', async function () {
+          del.disabled = true;
+          var r = await sb.from('booking_comments').delete().eq('id', cm.id);
+          if (r.error) { del.disabled = false; row.appendChild(msg(r.error.message, 'error')); return; }
+          comments[b.id] = (comments[b.id] || []).filter(function (x) { return x.id !== cm.id; });
+          rerenderCard(b);
+        });
+        row.appendChild(del);
+      }
+      box.appendChild(row);
+    });
+    var ta = el('textarea', { id: 'c-' + b.id, maxlength: '2000', rows: '2', placeholder: isAdmin ? 'Reply to the artist…' : 'Questions, approvals, details…', 'aria-label': 'Comment on ' + b.event });
+    var post = el('button', { class: 'btn btn-solid', type: 'button', text: 'Post' });
+    var status = msg('');
+    post.addEventListener('click', async function () {
+      var body = ta.value.trim();
+      if (!body) { ta.focus(); return; }
+      post.disabled = true;
+      var r = await sb.from('booking_comments').insert({ booking_id: b.id, body: body }).select('id, booking_id, author_id, author_label, body, created_at').single();
+      post.disabled = false;
+      if (r.error) { status.textContent = 'Couldn’t post that. ' + r.error.message; status.className = 'bk-msg error'; return; }
+      (comments[b.id] = comments[b.id] || []).push(r.data);
+      rerenderCard(b);
+      var again = document.getElementById('c-' + b.id); if (again) again.focus();
+    });
+    box.appendChild(el('div', { class: 'bk-cform' }, [ta, post]));
+    box.appendChild(status);
+    return box;
+  }
+
+  // ---- Staff editing ----
+  function input(id, label, value, type, opts) {
+    var f;
+    if (opts) {
+      f = el('select', { id: id });
+      opts.forEach(function (o) { var op = el('option', { value: o, text: o }); if (o === value) op.selected = true; f.appendChild(op); });
+      if (value && opts.indexOf(value) === -1) { var extra = el('option', { value: value, text: value }); extra.selected = true; f.appendChild(extra); }
+    } else if (type === 'textarea') {
+      f = el('textarea', { id: id }); f.value = value || '';
+    } else {
+      f = el('input', { id: id, type: type || 'text' }); f.value = value || '';
+    }
+    return { node: f, wrap: el('div', { class: 'bk-field' }, [el('label', { for: id, text: label }), f]) };
+  }
+
+  function fieldsFor(prefix, b) {
+    b = b || {};
+    return {
+      event: input(prefix + 'event', 'Name', b.event),
+      type: input(prefix + 'type', 'Type', b.type || 'Festival', null, TYPES),
+      location: input(prefix + 'loc', 'Location', b.location),
+      event_dates: input(prefix + 'dates', 'Event dates', b.event_dates),
+      status: input(prefix + 'status', 'Status', b.status || 'To do', null, STATUSES),
+      deadline: input(prefix + 'deadline', 'Deadline', b.deadline ? String(b.deadline).slice(0, 10) : '', 'date'),
+      deadline_note: input(prefix + 'dnote', 'Deadline note', b.deadline_note),
+      submitted: input(prefix + 'submitted', 'Submitted on', b.submitted ? String(b.submitted).slice(0, 10) : '', 'date'),
+      method: input(prefix + 'method', 'How to apply', b.method),
+      fee: input(prefix + 'fee', 'Fee', b.fee),
+      billing: input(prefix + 'billing', 'Billing', b.billing || 'Full band', null, BILLING),
+      link: input(prefix + 'link', 'Link', b.link, 'url'),
+      artist_note: input(prefix + 'anote', 'Note to artist (they see this)', b.artist_note, 'textarea'),
+      paid: input(prefix + 'paid', 'Paid $ (staff only)', b.id && paid[b.id] !== undefined ? String(paid[b.id]) : '', 'number'),
+      internal: input(prefix + 'inote', 'Internal note (staff only)', b.id ? notes[b.id] : '', 'textarea')
+    };
+  }
+  function layout(f) {
+    f.paid.node.setAttribute('min', '0'); f.paid.node.setAttribute('step', '0.01'); f.paid.node.setAttribute('inputmode', 'decimal'); f.paid.node.setAttribute('placeholder', '0');
+    return [f.event.wrap, f.type.wrap, f.location.wrap, f.event_dates.wrap, f.status.wrap, f.billing.wrap,
+      f.deadline.wrap, f.deadline_note.wrap, f.method.wrap, f.fee.wrap, f.submitted.wrap, f.paid.wrap, spanned(f.link.wrap),
+      spanned(f.artist_note.wrap), spanned(f.internal.wrap)];
+  }
+  function readPaid(f) {
+    var v = f.paid.node.value.trim();
+    if (v === '') return { value: null };
+    var n = Number(v);
+    if (!isFinite(n) || n < 0) return { error: 'Paid must be a dollar amount, 0 or more.' };
+    return { value: Math.round(n * 100) / 100 };
+  }
+  function spanned(n) { n.classList.add('span'); return n; }
+  function collect(f) {
+    var rec = {};
+    ['event', 'type', 'location', 'event_dates', 'status', 'deadline_note', 'method', 'fee', 'billing', 'link', 'artist_note'].forEach(function (k) {
+      var v = f[k].node.value.trim(); rec[k] = v || null;
+    });
+    rec.deadline = f.deadline.node.value || null;
+    rec.submitted = f.submitted.node.value || null;
+    if (rec.status === 'Submitted' && !rec.submitted) {
+      var t = today(); rec.submitted = t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
+    }
+    return rec;
+  }
+  // Internal note and paid amount share the staff-only booking_notes row.
+  async function saveNote(id, text, amount) {
+    text = (text || '').trim();
+    var hasPaid = amount !== null && amount !== undefined;
+    if (!text && !hasPaid) {
+      if (notes[id] || paid[id] !== undefined) {
+        var d = await sb.from('booking_notes').delete().eq('booking_id', id);
+        if (d.error) return d.error;
+        delete notes[id]; delete paid[id];
+      }
+      return null;
+    }
+    var r = await sb.from('booking_notes').upsert({ booking_id: id, note: text || null, paid: hasPaid ? amount : null, updated_at: new Date().toISOString() });
+    if (!r.error) {
+      if (text) notes[id] = text; else delete notes[id];
+      if (hasPaid) paid[id] = amount; else delete paid[id];
+    }
+    return r.error;
+  }
+
+  function editBox(b) {
+    var f = fieldsFor('e-' + b.id + '-', b);
+    var status = msg('');
+    var save = el('button', { class: 'btn btn-solid', type: 'button', text: 'Save changes' });
+    var del = el('button', { class: 'bk-linkbtn danger', type: 'button', text: 'Delete booking' });
+    var confirmDel = false;
+    save.addEventListener('click', async function () {
+      var rec = collect(f);
+      if (!rec.event) { status.textContent = 'Add a name.'; status.className = 'bk-msg error'; return; }
+      var pd = readPaid(f);
+      if (pd.error) { status.textContent = pd.error; status.className = 'bk-msg error'; return; }
+      save.disabled = true; status.textContent = 'Saving…'; status.className = 'bk-msg';
+      var r = await sb.from('bookings').update(rec).eq('id', b.id).select().single();
+      var nErr = r.error ? null : await saveNote(b.id, f.internal.node.value, pd.value);
+      save.disabled = false;
+      if (r.error || nErr) { status.textContent = (r.error || nErr).message; status.className = 'bk-msg error'; return; }
+      bookings = bookings.map(function (x) { return x.id === b.id ? r.data : x; });
+      open.edit[b.id] = false;
+      render();
+      var moved = document.getElementById('b-' + b.id); if (moved) moved.scrollIntoView({ block: 'nearest' });
+    });
+    del.addEventListener('click', async function () {
+      if (!confirmDel) { confirmDel = true; del.textContent = 'Tap again to delete for good'; return; }
+      del.disabled = true;
+      var r = await sb.from('bookings').delete().eq('id', b.id);
+      if (r.error) { del.disabled = false; status.textContent = r.error.message; status.className = 'bk-msg error'; return; }
+      bookings = bookings.filter(function (x) { return x.id !== b.id; });
+      render();
+    });
+    return el('div', { class: 'bk-edit' }, layout(f).concat([
+      el('div', { class: 'bk-editbar span' }, [save, del, status])
+    ]));
+  }
+
+  function addForm() {
+    var f = fieldsFor('new-', { artist: artist });
+    var who = input('new-artist', 'Artist', artist || '');
+    var status = msg('');
+    var add = el('button', { class: 'btn btn-solid', type: 'button', text: 'Add booking' });
+    add.addEventListener('click', async function () {
+      var rec = collect(f);
+      rec.artist = who.node.value.trim();
+      if (!rec.event || !rec.artist) { status.textContent = 'Add the artist and a name.'; status.className = 'bk-msg error'; return; }
+      var pd = readPaid(f);
+      if (pd.error) { status.textContent = pd.error; status.className = 'bk-msg error'; return; }
+      add.disabled = true; status.textContent = 'Adding…'; status.className = 'bk-msg';
+      var r = await sb.from('bookings').insert(rec).select().single();
+      var nErr = r.error ? null : await saveNote(r.data.id, f.internal.node.value, pd.value);
+      add.disabled = false;
+      if (r.error || nErr) { status.textContent = (r.error || nErr).message; status.className = 'bk-msg error'; return; }
+      bookings.push(r.data);
+      if (artists.indexOf(r.data.artist) === -1) artists.push(r.data.artist);
+      artist = r.data.artist;
+      render();
+    });
+    return el('details', { class: 'bk-add' }, [
+      el('summary', { text: 'Add a booking' }),
+      el('div', { class: 'bk-edit' }, [spanned(who.wrap)].concat(layout(f)).concat([
+        el('div', { class: 'bk-editbar span' }, [add, status])
+      ]))
+    ]);
+  }
+
+  boot();
+})();
+</script>
+</body>
+</html>

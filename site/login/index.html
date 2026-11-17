@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Log In — Bullpen Records</title>
+<link rel="icon" type="image/svg+xml" href="/assets/brand/bullpen-favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/app/apple-touch-icon.png">
+<meta name="theme-color" content="#121212">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Bullpen">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=p3">
+<style>
+  .login-wrap{ max-width: 420px; }
+  .login-wrap .section-title{ margin-bottom: 12px; }
+  .login-sub{ color: var(--infield-dust); margin: 0 0 32px; }
+  .login-wrap .btn{ width: 100%; padding-top: 14px; padding-bottom: 14px; }
+  .login-links{ display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+  .login-links .btn{ text-align: center; }
+  [hidden]{ display: none !important; }
+  .login-forgot{ background: none; border: 0; padding: 0; cursor: pointer; margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<div id="header-placeholder"></div>
+
+<main>
+  <section class="hero wrap login-wrap">
+    <div class="section-label mono">MEMBERS</div>
+
+    <!-- Signed out -->
+    <div id="login-view" hidden>
+      <h1 class="section-title">Log in</h1>
+      <p class="login-sub">Bookings, production and settlement for Bullpen Records artists and staff.</p>
+      <form id="login-form" novalidate>
+        <div class="field">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" name="email" autocomplete="username" required>
+        </div>
+        <div class="field">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" name="password" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn btn-solid" id="login-submit">Log in</button>
+        <div id="login-status" class="status-message" role="status" aria-live="polite"></div>
+      </form>
+      <button type="button" class="nav-login login-forgot" id="forgot-btn">Forgot password?</button>
+    </div>
+
+    <!-- Set a password (invite or reset link) -->
+    <div id="password-view" hidden>
+      <h1 class="section-title" id="password-title">Set your password</h1>
+      <p class="login-sub" id="password-sub">Choose a password for your Bullpen Records login.</p>
+      <form id="password-form" novalidate>
+        <div class="field">
+          <label for="new-password">New password</label>
+          <input type="password" id="new-password" name="new-password" autocomplete="new-password" minlength="8" required>
+        </div>
+        <div class="field">
+          <label for="confirm-password">Confirm password</label>
+          <input type="password" id="confirm-password" name="confirm-password" autocomplete="new-password" minlength="8" required>
+        </div>
+        <button type="submit" class="btn btn-solid" id="password-submit">Save password</button>
+        <div id="password-status" class="status-message" role="status" aria-live="polite"></div>
+      </form>
+    </div>
+
+    <!-- Signed in -->
+    <div id="member-view" hidden>
+      <h1 class="section-title">You're logged in</h1>
+      <p class="login-sub" id="member-email"></p>
+      <div class="login-links">
+        <a class="btn btn-solid" href="/bookings/">Bookings</a>
+        <a class="btn" href="/production-tracker/" data-admin-only>Production Tracker</a>
+        <a class="btn" href="/settlement/" data-admin-only>Settlement</a>
+      </div>
+      <a href="/login/?signout=1" class="nav-login">Sign out</a>
+    </div>
+  </section>
+
+  <div id="footer-placeholder"></div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="/js/auth.js?v=p3"></script>
+<script src="/js/main.js?v=p3" defer></script>
+<script>
+(function () {
+  'use strict';
+  var auth = window.bullpenAuth;
+  var params = new URLSearchParams(location.search);
+  var loginView = document.getElementById('login-view');
+  var passwordView = document.getElementById('password-view');
+  var memberView = document.getElementById('member-view');
+  var form = document.getElementById('login-form');
+  var email = document.getElementById('login-email');
+  var pass = document.getElementById('login-password');
+  var submit = document.getElementById('login-submit');
+  var status = document.getElementById('login-status');
+  var pForm = document.getElementById('password-form');
+  var pNew = document.getElementById('new-password');
+  var pConfirm = document.getElementById('confirm-password');
+  var pSubmit = document.getElementById('password-submit');
+  var pStatus = document.getElementById('password-status');
+  var forgotBtn = document.getElementById('forgot-btn');
+
+  // Only follow same-site paths after login (blocks open redirects like //evil.com)
+  function nextPath(role) {
+    var n = params.get('next') || '';
+    if (/^\/(?!\/)[^\\]*$/.test(n)) return n;
+    return auth.homeFor(role);
+  }
+  function say(box, msg, kind) {
+    box.textContent = msg || '';
+    box.className = 'status-message' + (kind ? ' ' + kind : '');
+  }
+  function only(view) {
+    [loginView, passwordView, memberView].forEach(function (v) { v.hidden = v !== view; });
+  }
+  function showLogin() { only(loginView); email.focus(); }
+  function showMember(session) {
+    only(memberView);
+    document.getElementById('member-email').textContent = session.user.email;
+  }
+  function showPassword(type) {
+    only(passwordView);
+    if (type === 'recovery') {
+      document.getElementById('password-title').textContent = 'Reset your password';
+      document.getElementById('password-sub').textContent = 'Choose a new password for your login.';
+    }
+    pNew.focus();
+  }
+
+  if (!auth || !auth.sb) {
+    showLogin();
+    say(status, 'Login is unavailable right now. Try again in a minute.', 'error');
+    submit.disabled = true;
+    return;
+  }
+
+  if (params.has('signout')) {
+    auth.sb.auth.signOut({ scope: 'local' }).then(function () {
+      document.documentElement.setAttribute('data-auth', 'out');
+      document.documentElement.removeAttribute('data-role');
+      try { localStorage.removeItem('bullpen-role'); } catch (e) {}
+      history.replaceState(null, '', '/login/');
+      showLogin();
+      say(status, 'You\u2019re signed out.', 'success');
+    });
+  } else {
+    auth.ready.then(function (session) {
+      if (session && auth.linkType) { showPassword(auth.linkType); return; }
+      if (session) { showMember(session); return; }
+      showLogin();
+      if (auth.linkError) {
+        forgotBtn.textContent = 'Send me a new link';
+        say(status, 'That link expired or was already used. Enter your email, then tap “Send me a new link.”', 'error');
+      }
+    });
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!email.value.trim() || !pass.value) { say(status, 'Enter your email and password.', 'error'); return; }
+    submit.disabled = true;
+    say(status, 'Logging in\u2026');
+    auth.sb.auth.signInWithPassword({ email: email.value.trim(), password: pass.value }).then(function (r) {
+      if (r.error) {
+        submit.disabled = false;
+        say(status, r.error.message === 'Invalid login credentials' ? 'That email and password don\u2019t match.' : r.error.message, 'error');
+        return;
+      }
+      auth.sb.from('profiles').select('role').eq('user_id', r.data.user.id).maybeSingle().then(function (p) {
+        var role = (p && p.data && p.data.role) || 'none';
+        try { localStorage.setItem('bullpen-role', role); } catch (e2) {}
+        location.replace(nextPath(role));
+      });
+    });
+  });
+
+  forgotBtn.addEventListener('click', function () {
+    var addr = email.value.trim();
+    if (!addr) { say(status, 'Enter your email above, then tap “' + forgotBtn.textContent + '”', 'error'); email.focus(); return; }
+    say(status, 'Sending\u2026');
+    auth.sb.auth.resetPasswordForEmail(addr, { redirectTo: location.origin + '/login/' }).then(function (r) {
+      if (r.error) { say(status, r.error.message, 'error'); return; }
+      say(status, 'If that email has a login, a new link is on its way. It’s good for 24 hours.', 'success');
+    });
+  });
+
+  pForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (pNew.value.length < 8) { say(pStatus, 'Use at least 8 characters.', 'error'); return; }
+    if (pNew.value !== pConfirm.value) { say(pStatus, 'The passwords don\u2019t match.', 'error'); return; }
+    pSubmit.disabled = true;
+    say(pStatus, 'Saving\u2026');
+    auth.sb.auth.updateUser({ password: pNew.value }).then(function (r) {
+      if (r.error) { pSubmit.disabled = false; say(pStatus, r.error.message, 'error'); return; }
+      say(pStatus, 'Password saved.', 'success');
+      auth.profile.then(function (p) { location.replace(auth.homeFor(p && p.role)); });
+    });
+  });
+})();
+</script>
+</body>
+</html>

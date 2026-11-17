@@ -1,0 +1,181 @@
+// ---------- Signed-in state for the nav ----------
+// Public pages don't load Supabase, so this just checks for a stored session to
+// show Log in vs. Sign out and the members-only links. Protected pages verify the
+// session for real in /js/auth.js.
+(function () {
+  var root = document.documentElement;
+  if (root.hasAttribute('data-require-auth') || root.getAttribute('data-auth')) return;
+  var signedIn = false;
+  try {
+    for (var i = 0; i < localStorage.length; i++) {
+      var key = localStorage.key(i);
+      if (/^sb-.+-auth-token$/.test(key)) {
+        var val = JSON.parse(localStorage.getItem(key));
+        if (val && val.refresh_token) signedIn = true;
+      }
+    }
+  } catch (e) { /* storage blocked: treat as signed out */ }
+  root.setAttribute('data-auth', signedIn ? 'in' : 'out');
+  if (signedIn) {
+    try { var role = localStorage.getItem('bullpen-role'); if (role) root.setAttribute('data-role', role); } catch (e) {}
+  }
+})();
+
+// Invite and password-reset links can land on any page; send them to /login/ to finish.
+(function () {
+  if (location.pathname.indexOf('/login/') === 0) return;
+  if (/[#&]access_token=/.test(location.hash) && /[#&]type=(invite|recovery)\b/.test(location.hash)) {
+    location.replace('/login/' + location.hash);
+  }
+})();
+
+// ---------- Load shared header/footer partials ----------
+async function loadPartial(placeholderId, url) {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Failed to load ' + url);
+    document.getElementById(placeholderId).outerHTML = await res.text();
+  } catch (err) {
+    console.error(err);
+  }
+}
+loadPartial('header-placeholder', '/partials/header.html');
+loadPartial('footer-placeholder', '/partials/footer.html');
+
+// ---------- Desktop member menu (hamburger for signed-in links) ----------
+// The header loads after this script runs, so listen on the document.
+(function () {
+  function parts() {
+    var btn = document.querySelector('.member-menu-btn');
+    return btn ? { btn: btn, panel: document.getElementById(btn.getAttribute('aria-controls')) } : null;
+  }
+  function setOpen(open, focusBtn) {
+    var p = parts();
+    if (!p || !p.panel) return;
+    p.btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    p.panel.hidden = !open;
+    if (!open && focusBtn) p.btn.focus();
+  }
+  function isOpen() {
+    var p = parts();
+    return !!(p && p.btn.getAttribute('aria-expanded') === 'true');
+  }
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('.member-menu-btn')) { setOpen(!isOpen()); return; }
+    if (isOpen() && !e.target.closest('.member-menu-panel')) setOpen(false);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && isOpen()) setOpen(false, true);
+  });
+  document.addEventListener('focusin', function (e) {
+    if (isOpen() && !e.target.closest('.member-menu')) setOpen(false);
+  });
+  // Close it if the window shrinks to the mobile menu while it's open.
+  window.matchMedia('(max-width: 960px)').addEventListener('change', function (mq) {
+    if (mq.matches) setOpen(false);
+  });
+})();
+
+// ---------- Fade in sections as they scroll into view ----------
+(function () {
+  var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var sections = document.querySelectorAll('.fade-section');
+
+  if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+    sections.forEach(function (el) { el.classList.add('is-visible'); });
+    return;
+  }
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+  sections.forEach(function (el) { observer.observe(el); });
+})();
+
+// ---------- Musician search filter (only runs if the search box exists) ----------
+(function () {
+  var input = document.getElementById('musician-search');
+  var grid = document.getElementById('musician-grid');
+  if (!input || !grid) return;
+
+  var cards = grid.querySelectorAll('.channel');
+  var emptyMsg = document.getElementById('musician-search-empty');
+
+  input.addEventListener('input', function () {
+    var term = input.value.trim().toLowerCase();
+    var visibleCount = 0;
+
+    cards.forEach(function (card) {
+      var match = card.textContent.toLowerCase().indexOf(term) !== -1;
+      card.style.display = match ? '' : 'none';
+      if (match) visibleCount++;
+    });
+
+    if (emptyMsg) emptyMsg.style.display = visibleCount === 0 ? 'block' : 'none';
+  });
+})();
+
+// ---------- Artist type + genre filter (only runs if the pills exist) ----------
+(function () {
+  var typeBar = document.getElementById('artist-type-filter');
+  var genreBar = document.getElementById('artist-genre-filter');
+  var grid = document.getElementById('artist-grid');
+  if (!typeBar || !genreBar || !grid) return;
+
+  var cards = grid.querySelectorAll('.artist-card');
+  var emptyMsg = document.getElementById('artist-filter-empty');
+
+  var activeType = 'all';
+  var activeGenre = 'all';
+
+  function setActivePill(bar, clickedPill) {
+    bar.querySelectorAll('.filter-pill').forEach(function (p) { p.classList.remove('is-active'); });
+    clickedPill.classList.add('is-active');
+  }
+
+  function applyFilters() {
+    var visibleCount = 0;
+    cards.forEach(function (card) {
+      var cardType = card.getAttribute('data-type');
+      var cardGenres = (card.getAttribute('data-genre') || '').split(' ');
+
+      var typeMatch = activeType === 'all' || cardType === activeType;
+      var genreMatch = activeGenre === 'all' || cardGenres.indexOf(activeGenre) !== -1;
+
+      var match = typeMatch && genreMatch;
+      card.style.display = match ? '' : 'none';
+      if (match) visibleCount++;
+    });
+    if (emptyMsg) emptyMsg.style.display = visibleCount === 0 ? 'block' : 'none';
+  }
+
+  typeBar.querySelectorAll('.filter-pill').forEach(function (pill) {
+    pill.addEventListener('click', function () {
+      activeType = pill.getAttribute('data-value');
+      setActivePill(typeBar, pill);
+      applyFilters();
+    });
+  });
+
+  genreBar.querySelectorAll('.filter-pill').forEach(function (pill) {
+    pill.addEventListener('click', function () {
+      activeGenre = pill.getAttribute('data-value');
+      setActivePill(genreBar, pill);
+      applyFilters();
+    });
+  });
+})();
+
+// ---------- Home-screen app ----------
+// Registers the service worker so the site can be installed as an app.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('/sw.js').catch(function (err) { console.error(err); });
+  });
+}

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Style Guide — Bullpen Records</title>
+<link rel="icon" type="image/svg+xml" href="/assets/brand/bullpen-favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/brand/favicon-48.png">
+<link rel="apple-touch-icon" href="/assets/app/apple-touch-icon.png">
+<meta name="theme-color" content="#121212">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Bullpen">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=p3">
+<style>
+  /* Style-guide-only helpers. Nothing here ships to real pages. */
+  .sg-note{ color: var(--ink-soft); font-size: 0.9rem; max-width: 70ch; }
+  .sg-sub{ margin: 40px 0 16px; font-size: 0.75rem; color: var(--accent-ink); }
+  .sg-sub:first-of-type{ margin-top: 0; }
+  .sg-logos{ display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  @media (max-width: 800px){ .sg-logos{ grid-template-columns: 1fr; } }
+  .sg-logo{ margin: 0; border: 1px solid var(--baseline); }
+  .sg-logo div{ display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .sg-logo img{ display: block; width: 100%; max-width: 320px; min-width: 160px; height: auto; }
+  .sg-logo figcaption{ padding: 10px 14px; border-top: 1px solid var(--baseline); font-size: 0.68rem; color: var(--infield-dust); background: var(--dugout-black); }
+  .sg-swatches{ display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  @media (max-width: 900px){ .sg-swatches{ grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .sg-swatch{ border: 1px solid var(--baseline); background: var(--bench); }
+  .sg-chip{ height: 96px; border-bottom: 1px solid var(--baseline); }
+  .sg-swatch dl{ margin: 0; padding: 14px; }
+  .sg-swatch dt{ font-size: 0.75rem; }
+  .sg-swatch dd{ margin: 4px 0 0; font-size: 0.82rem; color: var(--infield-dust); }
+  .sg-swatch dd.hex{ color: var(--chalk); font-variant-numeric: tabular-nums; }
+  .sg-pairs{ display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  @media (max-width: 900px){ .sg-pairs{ grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .sg-pair{ padding: 18px; border: 1px solid var(--baseline); }
+  .sg-pair .aa{ font-family: var(--font-display); font-size: 2.6rem; line-height: 1; }
+  .sg-pair .ratio{ font-size: 0.95rem; font-variant-numeric: tabular-nums; margin-top: 8px; }
+  .sg-pair .use{ font-size: 0.66rem; margin-top: 2px; }
+  .sg-type-row{ display: grid; grid-template-columns: 170px 1fr; gap: 24px; align-items: baseline; padding: 20px 0; border-bottom: 1px solid var(--rule); }
+  @media (max-width: 700px){ .sg-type-row{ grid-template-columns: 1fr; gap: 6px; } }
+  .sg-type-row .meta{ font-size: 0.68rem; color: var(--ink-soft); }
+  .sg-row{ display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .sg-photo{ display: flex; align-items: center; justify-content: center; color: var(--infield-dust); font-size: 0.68rem; }
+  .sg-assets{ display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-end; }
+  .sg-assets figure{ margin: 0; }
+  .sg-assets img{ display: block; border: 1px solid var(--baseline); }
+  .sg-assets figcaption{ font-size: 0.68rem; color: var(--ink-soft); margin-top: 8px; }
+  .sg-toc{ display: flex; flex-wrap: wrap; gap: 8px 20px; list-style: none; margin: 28px 0 0; padding: 0; font-size: 0.72rem; }
+  .sg-toc a{ color: var(--infield-dust); text-decoration: none; }
+  .sg-toc a:hover{ color: var(--chalk); }
+</style>
+</head>
+<body>
+
+<div id="header-placeholder"></div>
+
+<main>
+
+  <section class="hero wrap">
+    <div class="hero-eyebrow">Design system · Internal page</div>
+    <h1>Call the <span>bullpen.</span></h1>
+    <p class="hero-tag">Every color, type style and component the Bullpen Records site is built from. </p>
+    <div class="hero-actions">
+      <a href="#components" class="btn btn-solid">See the components</a>
+      <a href="#color" class="btn">See the colors</a>
+    </div>
+    <ul class="sg-toc mono">
+      <li><a href="#logos">01 Logos</a></li>
+      <li><a href="#color">02 Color</a></li>
+      <li><a href="#type">03 Type</a></li>
+      <li><a href="#buttons">04 Buttons</a></li>
+      <li><a href="#components">05 Components</a></li>
+      <li><a href="#forms">06 Forms &amp; data</a></li>
+      <li><a href="#surfaces">07 Surfaces</a></li>
+      <li><a href="#assets">08 Icons &amp; share image</a></li>
+    </ul>
+  </section>
+
+  <!-- 01 LOGOS -->
+  <section id="logos" class="wrap">
+    <div class="section-label mono">01 / Logos</div>
+    <h2 class="section-title">The mark</h2>
+    <div class="sg-logos">
+      <figure class="sg-logo">
+        <div style="background:var(--dugout-black)"><img src="/assets/brand/bullpen-records-cream.svg" alt="Bullpen Records logo, chalk on Dugout Black" width="320" height="160"></div>
+        <figcaption class="mono">Primary · Chalk on Dugout Black</figcaption>
+      </figure>
+      <figure class="sg-logo">
+        <div style="background:var(--chalk)"><img src="/assets/brand/bullpen-records-black.svg" alt="Bullpen Records logo, black on Chalk" width="320" height="160"></div>
+        <figcaption class="mono">Dugout Black on Chalk</figcaption>
+      </figure>
+      <figure class="sg-logo">
+        <div style="background:var(--stitch-red)"><img src="/assets/brand/bullpen-records-cream.svg" alt="Bullpen Records logo, chalk on Stitch Red" width="320" height="160"></div>
+        <figcaption class="mono">Chalk on Stitch Red</figcaption>
+      </figure>
+    </div>
+    <p class="sg-note" style="margin-top:24px">Always the SVG file, never retyped or redrawn. Minimum width 160px, which is the size used in the header. The file carries its own clear space. No stretching, recoloring, outlines or shadows. A dark overlay goes under it if it ever sits on a photo.</p>
+
+    <div class="sg-sub mono" style="margin-top:40px">The B · small spaces only</div>
+    <div class="sg-assets">
+      <figure><img src="/assets/brand/bullpen-B-cream.svg" alt="The B, chalk on Dugout Black" width="120" height="120" style="background:var(--dugout-black)"><figcaption class="mono">Chalk on black</figcaption></figure>
+      <figure><img src="/assets/brand/bullpen-B-black.svg" alt="The B, black on Chalk" width="120" height="120" style="background:var(--chalk)"><figcaption class="mono">Black on Chalk</figcaption></figure>
+      <figure><img src="/assets/brand/bullpen-B-cream.svg" alt="The B, chalk on Stitch Red" width="120" height="120" style="background:var(--stitch-red)"><figcaption class="mono">Chalk on Stitch Red</figcaption></figure>
+      <figure><img src="/assets/brand/bullpen-favicon.svg" alt="The B on a rounded black tile" width="120" height="120" style="border:0"><figcaption class="mono">Favicon tile</figcaption></figure>
+    </div>
+    <p class="sg-note" style="margin-top:24px">The B stands in for the full logo only where the wordmark can't be read: browser tabs and home-screen icons. Everywhere else, use the full logo.</p>
+  </section>
+
+  <!-- 02 COLOR -->
+  <section id="color" class="wrap">
+    <div class="section-label mono">02 / Color</div>
+    <h2 class="section-title">Eight colors. One source.</h2>
+    <div class="sg-swatches">
+      <div class="sg-swatch"><div class="sg-chip" style="background:var(--stitch-red)"></div><dl><dt class="mono">Stitch Red</dt><dd class="hex">#B23A2E</dd><dd>Buttons, dividers, key numerals</dd></dl></div>
+      <div class="sg-swatch"><div class="sg-chip" style="background:var(--dugout-black)"></div><dl><dt class="mono">Dugout Black</dt><dd class="hex">#121212</dd><dd>Page background, nav</dd></dl></div>
+      <div class="sg-swatch"><div class="sg-chip" style="background:var(--chalk)"></div><dl><dt class="mono">Chalk</dt><dd class="hex">#EDE6D8</dd><dd>Body text on dark, light bands</dd></dl></div>
+      <div class="sg-swatch"><div class="sg-chip" style="background:var(--rally-red)"></div><dl><dt class="mono">Rally Red</dt><dd class="hex">#E06B52</dd><dd>Small labels on black, hover, focus</dd></dl></div>
+      <div class="sg-swatch"><div class="sg-chip" style="background:var(--clay-brick)"></div><dl><dt class="mono">Clay Brick</dt><dd class="hex">#7A2A21</dd><dd>Pressed red, accent text on Chalk</dd></dl></div>
+      <div class="sg-swatch"><div class="sg-chip" style="background:var(--bench)"></div><dl><dt class="mono">Bench</dt><dd class="hex">#1C1B19</dd><dd>Cards, panels, form fields</dd></dl></div>
+      <div class="sg-swatch"><div class="sg-chip" style="background:var(--baseline)"></div><dl><dt class="mono">Baseline</dt><dd class="hex">#33302B</dd><dd>Borders, rules</dd></dl></div>
+      <div class="sg-swatch"><div class="sg-chip" style="background:var(--infield-dust)"></div><dl><dt class="mono">Infield Dust</dt><dd class="hex">#8F887C</dd><dd>Secondary text, captions</dd></dl></div>
+    </div>
+
+    <div class="sg-sub mono" style="margin-top:48px">Text pairings / contrast</div>
+    <div class="sg-pairs">
+      <div class="sg-pair" style="background:var(--dugout-black);color:var(--chalk)"><div class="aa">Aa</div><div class="ratio">15.1:1</div><div class="use mono">Chalk on black · body</div></div>
+      <div class="sg-pair" style="background:var(--dugout-black);color:var(--rally-red)"><div class="aa">Aa</div><div class="ratio">5.7:1</div><div class="use mono">Rally Red on black · labels</div></div>
+      <div class="sg-pair" style="background:var(--dugout-black);color:var(--infield-dust)"><div class="aa">Aa</div><div class="ratio">5.3:1</div><div class="use mono">Dust on black · captions</div></div>
+      <div class="sg-pair" style="background:var(--dugout-black);color:var(--stitch-red)"><div class="aa">Aa</div><div class="ratio" style="color:var(--chalk)">3.2:1</div><div class="use mono" style="color:var(--chalk)">Stitch Red on black · large only</div></div>
+      <div class="sg-pair" style="background:var(--stitch-red);color:var(--chalk)"><div class="aa">Aa</div><div class="ratio">4.8:1</div><div class="use mono">Chalk on Stitch Red · buttons</div></div>
+      <div class="sg-pair" style="background:var(--bench);color:var(--rally-red)"><div class="aa">Aa</div><div class="ratio">5.2:1</div><div class="use mono">Rally Red on Bench · card numerals</div></div>
+      <div class="sg-pair" style="background:var(--chalk);color:var(--dugout-black)"><div class="aa">Aa</div><div class="ratio">15.1:1</div><div class="use mono">Black on Chalk · body</div></div>
+      <div class="sg-pair" style="background:var(--chalk);color:var(--clay-brick)"><div class="aa">Aa</div><div class="ratio">7.8:1</div><div class="use mono">Clay Brick on Chalk · labels</div></div>
+    </div>
+    <p class="sg-note" style="margin-top:24px">One adjustment beyond the brand guide: Stitch Red on a Bench card measures 2.9:1, just under the 3:1 minimum for large type. Numerals and accents inside cards use Rally Red instead. Stitch Red stays for buttons, dividers and anything on Dugout Black.</p>
+  </section>
+
+  <!-- 03 TYPE -->
+  <section id="type" class="wrap">
+    <div class="section-label mono">03 / Typography</div>
+    <h2 class="section-title">Bebas Neue &amp; Archivo</h2>
+    <div class="sg-type-row"><div class="meta mono">H1 · Bebas Neue · 48–104px</div><h1>Call the bullpen.</h1></div>
+    <div class="sg-type-row"><div class="meta mono">H2 · Bebas Neue · 32–48px</div><h2>We'll close it out.</h2></div>
+    <div class="sg-type-row"><div class="meta mono">H3 · Bebas Neue · 28px minimum</div><h3>Booking &amp; representation</h3></div>
+    <div class="sg-type-row"><div class="meta mono">Lede · Archivo Regular · 17.6px</div><p class="lede" style="margin:0">Independent artists carry the whole game: writing, rehearsing, playing out, booking, posting, building the website and putting out records. Eventually the arm gets tired.</p></div>
+    <div class="sg-type-row"><div class="meta mono">Body · Archivo Regular · 16px</div><p style="margin:0;max-width:62ch">Bullpen Records is the relief. In baseball, you call the bullpen when the starter has gone as far as he can. We step in with label-level support for the parts of the job that wear artists down, so they can stay focused on the music.</p></div>
+    <div class="sg-type-row"><div class="meta mono">Secondary · Infield Dust</div><p class="muted" style="margin:0">Artists keep their music, their masters and their accounts.</p></div>
+    <div class="sg-type-row"><div class="meta mono">Label · Archivo SemiBold caps · +10%</div><div class="mono" style="font-size:0.75rem">Service 03 / Booking &amp; representation</div></div>
+    <div class="sg-type-row"><div class="meta mono">Figures · tabular</div><div class="num">507-200-8199 &nbsp;·&nbsp; 06 / 19 / 27 &nbsp;·&nbsp; $1,100.00</div></div>
+    <div class="sg-type-row"><div class="meta mono">Link</div><div><a href="#type" class="text-link">Rally Red link on black</a></div></div>
+  </section>
+
+  <!-- 04 BUTTONS -->
+  <section id="buttons" class="wrap">
+    <div class="section-label mono">04 / Buttons</div>
+    <h2 class="section-title">Calls to action</h2>
+    <div class="sg-sub mono">On Dugout Black</div>
+    <div class="sg-row">
+      <a href="#buttons" class="btn btn-solid">Call the bullpen</a>
+      <a href="#buttons" class="btn">See the roster</a>
+      <button class="btn btn-solid" disabled>Disabled</button>
+      <button class="btn" disabled>Disabled</button>
+    </div>
+    <p class="sg-note" style="margin-top:20px">Solid Stitch Red is the one primary action per screen. It presses to Clay Brick. The outline button is Rally Red and fills on hover. Tab to any button to see the Rally Red focus ring.</p>
+  </section>
+
+  <!-- 05 COMPONENTS -->
+  <section id="components" class="wrap section-intro">
+    <div class="section-label mono">05 / Components</div>
+    <h2 class="section-title">What we do</h2>
+    <p class="sg-note">Service cards. Five across on desktop, three on tablet, stacked on a phone.</p>
+  </section>
+  <div class="channels channels-5">
+    <a href="#components" class="channel"><span class="channel-num mono">01</span><h3>Brand &amp; digital</h3><p>Websites built to get booked, EPKs, social content and streaming profiles.</p></a>
+    <a href="#components" class="channel"><span class="channel-num mono">02</span><h3>Release support</h3><p>Release plans plus recording, mixing and mastering through our production network.</p></a>
+    <a href="#components" class="channel"><span class="channel-num mono">03</span><h3>Booking &amp; representation</h3><p>Local booking support and pitching to venues, bars and festivals.</p></a>
+    <a href="#components" class="channel"><span class="channel-num mono">04</span><h3>The bullpen</h3><p>Session and fill-in players, producers and engineers, ready to call in.</p></a>
+    <a href="#components" class="channel"><span class="channel-num mono">05</span><h3>Industry network</h3><p>Connections to venues, promoters, photographers and videographers.</p></a>
+  </div>
+
+  <section class="wrap">
+    <div class="sg-sub mono">How it works · four steps</div>
+    <ol class="steps steps-4">
+      <li><span class="step-num">1</span><span class="step-title">The call</span><span class="step-text">We learn where the artist is and what's wearing them out.</span></li>
+      <li><span class="step-num">2</span><span class="step-title">The game plan</span><span class="step-text">A defined scope and price for the specific job.</span></li>
+      <li><span class="step-num">3</span><span class="step-title">Relief</span><span class="step-text">We take the work on while the artist keeps playing.</span></li>
+      <li><span class="step-num">4</span><span class="step-title">Close it out</span><span class="step-text">Launch, hand over the keys, and stay on call if needed.</span></li>
+    </ol>
+
+    <div class="sg-sub mono">Artist cards · same services, same wording</div>
+    <div class="artist-grid roster-grid">
+      <article class="artist-card">
+        <div class="artist-photo sg-photo mono" role="img" aria-label="Photo placeholder">Photo</div>
+        <div class="artist-body">
+          <div class="artist-tags"><span class="artist-tag">Cover band</span><span class="bookable-tag">Bookable</span></div>
+          <h3>Whiskey Peddler</h3>
+          <p class="artist-genre">Rock · Country</p>
+          <p class="artist-bio">Sample card.</p>
+          <div class="card-actions"><a href="#components" class="btn btn-solid">Book Whiskey Peddler</a><a href="#components" class="btn">Visit site</a></div>
+        </div>
+      </article>
+      <article class="artist-card">
+        <div class="artist-photo sg-photo mono" role="img" aria-label="Photo placeholder">Photo</div>
+        <div class="artist-body">
+          <div class="artist-tags"><span class="artist-tag">Original artist</span><span class="bookable-tag">Bookable</span><span class="format-tag">Originals + covers</span></div>
+          <h3>Matt Mueller</h3>
+          <p class="artist-genre">Country · Acoustic</p>
+          <p class="artist-bio">Sample card.</p>
+          <div class="card-actions"><a href="#components" class="btn btn-solid">Book Matt Mueller</a><a href="#components" class="btn">Visit site</a></div>
+        </div>
+      </article>
+      <div>
+        <div class="sg-sub mono">Paths</div>
+        <a href="#components" class="door">
+          <span class="door-eyebrow">For venues &amp; event organizers</span>
+          <span class="door-title">Book an act</span>
+          <span class="door-text">Reliable acts for your room, event or festival. Everyone we represent is bookable.</span>
+          <span class="door-link">See the roster →</span>
+        </a>
+        <div class="sg-sub mono">Filters &amp; tags</div>
+        <div class="filter-group">
+          <span class="filter-group-label">Type</span>
+          <div class="filter-pills">
+            <button type="button" class="filter-pill is-active" aria-pressed="true">All</button>
+            <button type="button" class="filter-pill" aria-pressed="false">Cover band</button>
+            <button type="button" class="filter-pill" aria-pressed="false">Original artist</button>
+          </div>
+        </div>
+        <div class="tag-row"><span class="tag">Electric guitar</span><span class="tag">Drums</span><span class="tag">Vocals</span></div>
+        <p style="margin-top:20px"><span class="live-label" style="font-size:0.75rem">Now booking</span></p>
+      </div>
+    </div>
+
+    <div class="sg-sub mono">Lists &amp; rows</div>
+    <div class="about-grid">
+      <ul class="feature-list">
+        <li>Flat project fees (websites, EPKs, releases)</li>
+        <li>Monthly retainers for ongoing updates and content</li>
+        <li>Commission on booking where we represent the act</li>
+        <li>Placement and referral fees within the network</li>
+      </ul>
+      <ul class="specs">
+        <li><span>Descriptor</span><span>Label services for independent artists</span></li>
+        <li><span>Based in</span><span>Twin Cities, Minnesota</span></li>
+        <li><span>Handle</span><span>@bullpenrecordsmn</span></li>
+        <li><span>Promise</span><span>You keep the music, the masters and the accounts</span></li>
+      </ul>
+    </div>
+  </section>
+  <div class="rooms">
+    <a href="#components" class="room-row"><span>Session &amp; fill-in players</span><span>On call</span></a>
+    <a href="#components" class="room-row"><span>Producers &amp; engineers</span><span>On call</span></a>
+  </div>
+
+  <!-- 06 FORMS & DATA -->
+  <section id="forms" class="wrap">
+    <div class="section-label mono">06 / Forms &amp; data</div>
+    <h2 class="section-title">Member app pieces</h2>
+    <p class="sg-note" style="margin-bottom:32px">Used by the login, Bookings, Production Tracker, Settlement and Team screens. All rows below are sample data.</p>
+
+    <div class="about-grid">
+      <form onsubmit="return false" novalidate>
+        <div class="form-grid">
+          <div class="field"><label for="sg-email">Email</label><input id="sg-email" type="email" placeholder="you@example.com" autocomplete="off"></div>
+          <div class="field"><label for="sg-access">Access</label><select id="sg-access"><option>Artist</option><option>Staff</option></select></div>
+        </div>
+        <div class="field has-error"><label for="sg-pass">Password</label><input id="sg-pass" type="password" value="short" aria-describedby="sg-pass-err"><span class="error" id="sg-pass-err">Use at least 8 characters.</span></div>
+        <div class="field"><label for="sg-note">Note</label><textarea id="sg-note" placeholder="Anything we should know"></textarea><span class="hint">Only staff see internal notes.</span></div>
+        <div class="deal-type-group" role="radiogroup" aria-label="Deal type">
+          <div class="deal-type-option"><input type="radio" name="sg-deal" id="sg-d1" checked><label for="sg-d1">Flat guarantee</label></div>
+          <div class="deal-type-option"><input type="radio" name="sg-deal" id="sg-d2"><label for="sg-d2">Door split</label></div>
+          <div class="deal-type-option"><input type="radio" name="sg-deal" id="sg-d3"><label for="sg-d3">Guarantee vs. %</label></div>
+        </div>
+        <div class="sg-row"><button class="btn btn-solid" type="submit">Save</button><button class="btn" type="button">Cancel</button></div>
+        <div class="status-message success" role="status">Settlement saved.</div>
+        <div class="status-message error" role="status">Could not save. Try again.</div>
+      </form>
+
+      <div>
+        <div class="stat-row" style="margin-bottom:24px">
+          <div class="stat"><div class="n">6</div><div class="l">Represented artists</div></div>
+          <div class="stat"><div class="n">5</div><div class="l">Services</div></div>
+        </div>
+        <div class="summary-box" style="margin:0">
+          <div class="summary-row"><span>Guarantee (sample)</span><span>$500.00</span></div>
+          <div class="summary-row"><span>Costs off the top (sample)</span><span>-$75.00</span></div>
+          <div class="summary-total"><span class="label">Total due artist</span><span class="amount">$425.00</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sg-sub mono">Table</div>
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th scope="col">Event</th><th scope="col">Type</th><th scope="col">Status</th><th scope="col">Deadline</th><th scope="col" class="num">Fee</th></tr></thead>
+        <tbody>
+          <tr><td>Sample event A</td><td>Festival</td><td><span class="bookable-tag">Waiting on you</span></td><td>Jan 15, 2027</td><td class="num">$25.00</td></tr>
+          <tr><td>Sample event B</td><td>Fair showcase</td><td>Submitted</td><td>Feb 1, 2027</td><td class="num">$0.00</td></tr>
+          <tr><td>Sample event C</td><td>Buyer pitch</td><td>Research</td><td>—</td><td class="num">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 07 SURFACES -->
+  <section id="surfaces" class="wrap section-intro" style="border-bottom:0">
+    <div class="section-label mono">07 / Surfaces</div>
+    <h2 class="section-title">Chalk and Stitch Red bands</h2>
+    <p class="sg-note">The site is Dugout Black by default. A Chalk or Stitch Red band breaks up a long page. The same components re-color themselves on each.</p>
+  </section>
+
+  <div class="band on-chalk">
+    <div class="wrap">
+      <img src="/assets/brand/bullpen-records-black.svg" alt="Bullpen Records" width="200" height="100" style="display:block;margin:0 0 20px -12px">
+      <div class="section-label mono">Why it exists</div>
+      <h2 class="section-title" style="margin-bottom:20px">You keep the <span>masters.</span></h2>
+      <p class="lede">A traditional label offers help, but usually takes ownership of the music in return. Bullpen Records is the relief.</p>
+      <p class="muted" style="max-width:52ch">Secondary text on Chalk uses Baseline. Small accent text uses <span class="accent-ink">Clay Brick</span>.</p>
+      <div class="sg-row" style="margin:24px 0 32px"><a href="#surfaces" class="btn btn-solid">Call the bullpen</a><a href="#surfaces" class="btn">How it works</a></div>
+      <ul class="specs" style="max-width:520px">
+        <li><span>Music</span><span>Yours</span></li>
+        <li><span>Masters</span><span>Yours</span></li>
+        <li><span>Accounts</span><span>Yours</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="band on-red">
+    <div class="wrap cta-band">
+      <div class="section-label mono">Ready when you are</div>
+      <h2 class="section-title" style="margin-bottom:20px">You pitched the first six innings.<br>We'll close it out.</h2>
+      <a href="#surfaces" class="btn btn-solid">Call the bullpen</a>
+      <a href="#surfaces" class="btn">See what we do</a>
+    </div>
+  </div>
+
+  <!-- 08 ASSETS -->
+  <section id="assets" class="wrap">
+    <div class="section-label mono">08 / Icons &amp; share image</div>
+    <h2 class="section-title">Generated from the artwork</h2>
+    <div class="sg-assets">
+      <figure><img src="/assets/brand/og-image.png" alt="Share image: chalk logo on Dugout Black" width="400" height="210"><figcaption class="mono">Share image · 1200 × 630</figcaption></figure>
+      <figure><img src="/assets/app/icon-512.png" alt="App icon" width="128" height="128"><figcaption class="mono">App icon · 512 / 192</figcaption></figure>
+      <figure><img src="/assets/app/icon-maskable-512.png" alt="Maskable app icon" width="128" height="128" style="border-radius:50%"><figcaption class="mono">Maskable · cropped round</figcaption></figure>
+      <figure><img src="/assets/app/apple-touch-icon.png" alt="iPhone home-screen icon" width="90" height="90" style="border-radius:20px"><figcaption class="mono">iPhone · 180</figcaption></figure>
+      <figure><img src="/assets/brand/favicon-48.png" alt="Favicon at 48 pixels" width="48" height="48" style="border:0"><figcaption class="mono">Favicon · 48</figcaption></figure>
+      <figure><img src="/assets/brand/favicon-32.png" alt="Favicon at 32 pixels" width="32" height="32" style="border:0"><figcaption class="mono">Favicon · 32</figcaption></figure>
+      <figure><img src="/assets/brand/favicon-32.png" alt="Favicon at actual tab size" width="16" height="16" style="border:0"><figcaption class="mono">Tab size · 16</figcaption></figure>
+    </div>
+    <p class="sg-note" style="margin-top:24px">All made by <code>tools/make-icons.sh</code> from the SVGs in <code>/brand</code>, scaled and centered only. The share image uses the full logo. Browser tabs and home-screen icons use the B.</p>
+  </section>
+
+  <div id="footer-placeholder"></div>
+
+</main>
+
+<script src="/js/main.js?v=p3" defer></script>
+</body>
+</html>
