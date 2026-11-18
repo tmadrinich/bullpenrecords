@@ -97,6 +97,19 @@
   .tk-msg.error{ color: var(--alert); }
   .tk-empty{ color: var(--infield-dust); padding: 24px 0; }
 
+  /* completed projects */
+  .tk-badge.complete{ border-color: var(--stitch-red); background: var(--stitch-red); color: var(--chalk); }
+  .tk-project.is-complete{ opacity: 0.7; }
+  .tk-project.is-complete:hover{ opacity: 1; }
+  .tk-done-group{ margin-top: 36px; }
+  .tk-done-group > summary{ cursor: pointer; list-style: none; margin-bottom: 16px; }
+  .tk-done-group > summary::-webkit-details-marker{ display: none; }
+  .tk-done-group > summary .tk-h2{ display: inline; margin: 0; }
+  .tk-done-group > summary .tk-h2::after{ content: ' +'; color: var(--infield-dust); }
+  .tk-done-group[open] > summary .tk-h2::after{ content: ' –'; }
+  .tk-complete-row{ display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 32px; }
+  .tk-complete-row .tk-linkbtn{ padding: 0; }
+
   @media (max-width: 560px){
     .tk-main{ padding: 40px 0 64px; }
     .tk-panel, .tk-project, .tk-session{ padding: 18px; }
@@ -169,6 +182,16 @@
   function badgeText(rate, b) {
     if (!(rate > 0)) return 'Set a target rate';
     return b.over ? 'Over budget · ' + fmt(-b.diff) + ' hrs over' : 'Under budget · ' + fmt(b.diff) + ' hrs left';
+  }
+  function isComplete(p) { return p && p.status === 'complete'; }
+  function prettyDate(d) {
+    if (!d) return '';
+    var x = new Date(d + 'T12:00:00');
+    return x.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+  function today() {
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   }
   function field(label, input, cls) {
     return el('div', { class: 'tk-field' + (cls ? ' ' + cls : '') }, [el('label', { text: label }), input]);
@@ -255,7 +278,24 @@
       return;
     }
 
-    projects.forEach(function (p) {
+    var active = projects.filter(function (p) { return !isComplete(p); });
+    var finished = projects.filter(isComplete).sort(function (a, b) {
+      return String(b.completed_at || '').localeCompare(String(a.completed_at || ''));
+    });
+
+    if (!active.length) app.appendChild(el('div', { class: 'tk-empty', text: 'No active projects.' }));
+    active.forEach(function (p) { app.appendChild(projectCard(p)); });
+
+    if (finished.length) {
+      var group = el('details', { class: 'tk-done-group' }, [
+        el('summary', {}, [el('h2', { class: 'tk-h2', text: 'Completed (' + finished.length + ')' })])
+      ]);
+      finished.forEach(function (p) { group.appendChild(projectCard(p)); });
+      app.appendChild(group);
+    }
+  }
+
+  function projectCard(p) {
       var used = 0, done = 0, total = 0;
       allSessions.forEach(function (s) {
         if (s.project_id !== p.id) return;
@@ -264,10 +304,14 @@
         if (s.hours !== null && s.hours !== undefined) used += num(s.hours);
       });
       var b = budgetInfo(num(p.price), num(p.target_rate), used);
-      var card = el('button', { class: 'tk-project', type: 'button' }, [
+      var fin = isComplete(p);
+      var badge = fin
+        ? el('span', { class: 'tk-badge complete', text: 'Complete' + (p.completed_at ? ' · ' + prettyDate(p.completed_at) : '') })
+        : el('span', { class: 'tk-badge' + (b.over ? ' over' : ''), text: badgeText(num(p.target_rate), b) });
+      var card = el('button', { class: 'tk-project' + (fin ? ' is-complete' : ''), type: 'button' }, [
         el('div', { class: 'tk-panel-head' }, [
           el('h3', { text: p.title }),
-          el('span', { class: 'tk-badge' + (b.over ? ' over' : ''), text: badgeText(num(p.target_rate), b) })
+          badge
         ]),
         el('div', { class: 'meta', text: p.artist || 'No artist set' }),
         el('div', { class: 'tk-bar' }, [el('div', { class: b.over ? 'over' : '', style: 'width:' + b.pct + '%' })]),
@@ -277,8 +321,7 @@
         ])
       ]);
       card.addEventListener('click', function () { location.hash = '#/project/' + p.id; });
-      app.appendChild(card);
-    });
+      return card;
   }
 
   // ---- Project detail ----
@@ -302,7 +345,8 @@
 
     app.appendChild(el('a', { class: 'tk-back', href: '#/', text: '← All projects' }));
     app.appendChild(el('h1', { class: 'tk-title', text: p.title }));
-    app.appendChild(el('p', { class: 'tk-sub', text: p.artist || '' }));
+    var sub = [p.artist || '', isComplete(p) ? 'Completed ' + prettyDate(p.completed_at) : ''].filter(Boolean).join(' · ');
+    app.appendChild(el('p', { class: 'tk-sub', text: sub }));
 
     // Budget panel
     ui.badge = el('span', { class: 'tk-badge' });
@@ -360,6 +404,20 @@
 
     app.appendChild(el('div', { class: 'tk-msg', id: 'status' }));
 
+    var toggle = el('button', {
+      class: isComplete(p) ? 'tk-linkbtn' : 'btn btn-solid', type: 'button',
+      text: isComplete(p) ? 'Reopen project' : 'Mark project complete'
+    });
+    toggle.addEventListener('click', async function () {
+      var patch = isComplete(p) ? { status: 'active', completed_at: null } : { status: 'complete', completed_at: today() };
+      toggle.disabled = true;
+      var r = await sb.from('projects').update(patch).eq('id', p.id);
+      toggle.disabled = false;
+      if (r.error) { fail(r.error); return; }
+      if (patch.status === 'complete') { location.hash = '#/'; return; }
+      p.status = patch.status; p.completed_at = patch.completed_at;
+      renderProject();
+    });
     var del = el('button', { class: 'tk-linkbtn', type: 'button', text: 'Delete this project' });
     del.addEventListener('click', async function () {
       if (!confirm('Delete “' + p.title + '” and all of its sessions?')) return;
@@ -367,7 +425,7 @@
       if (r.error) { fail(r.error); return; }
       location.hash = '#/';
     });
-    app.appendChild(el('div', { style: 'margin-top:32px' }, [del]));
+    app.appendChild(el('div', { class: 'tk-complete-row' }, [toggle, del]));
 
     refresh();
   }
