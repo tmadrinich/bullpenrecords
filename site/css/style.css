@@ -181,8 +181,8 @@ header{
   align-items: center;
   padding: 8px 0;
 }
-/* Below the max width, keep side gutters so the header doesn't touch the screen edge */
-@media (min-width: 641px) and (max-width: 1175px){
+/* Below the max width (phones included), keep side gutters so the header doesn't touch the screen edge */
+@media (max-width: 1175px){
   .nav{ padding-left: var(--gutter); padding-right: var(--gutter); }
 }
 .brand{ display: flex; justify-content: center; order: 2; }
@@ -286,6 +286,7 @@ header nav ul li a[aria-current="page"]{ color: var(--chalk); }
   gap: 5px;
   width: 26px;
   height: 22px;
+  flex-shrink: 0;
   cursor: pointer;
 }
 .nav-toggle-label span{
